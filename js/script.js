@@ -8,14 +8,12 @@ document.querySelector('#search-button').onclick = () =>{
 }
 
 let shoppingCart = document.querySelector('.shopping-cart');
-let checkoutForm = document.querySelector('.checkout-form');
 
 document.querySelector('#cart-button').onclick = () =>{
     searchForm.classList.remove('active');
     loginForm.classList.remove('active');
     navbar.classList.remove('active');
     shoppingCart.classList.toggle('active');
-    checkoutForm.classList.add('active');
 }
 
 let loginForm = document.querySelector('.login-form');
@@ -25,7 +23,6 @@ document.querySelector('#user-button').onclick = () =>{
     searchForm.classList.remove('active');
     shoppingCart.classList.remove('active');
     navbar.classList.remove('active');
-    checkoutForm.classList.remove('active');
 }
 
 let navbar = document.querySelector('.navbar');
@@ -44,7 +41,7 @@ window.onscroll = () => {
     navbar.classList.remove('active');
 }
 
-let cartItems = [];
+let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
 function addToCart(event) {
     let itemContainer = event.target.parentElement;
@@ -56,7 +53,8 @@ function addToCart(event) {
     let existingCartItem = cartItems.find(item => item.name === productName);
 
     if (existingCartItem) {
-        existingCartItem.quantity += 1;
+        existingCartItem.quantity = parseInt(existingCartItem.quantity, 10) + 1;
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
         updateCart();
     } else {
         let newCartItem = {
@@ -66,6 +64,7 @@ function addToCart(event) {
             image: productImage
         };
         cartItems.push(newCartItem);
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
         updateCart();
     }
 }
@@ -79,7 +78,8 @@ function updateCart() {
         let cartItem = document.createElement('div');
         cartItem.className = 'box';
         cartItem.innerHTML = `
-            <i class="fas fa-trash" onclick="removeFromCart(${index})"></i>
+            <i class="fas fa-cart-plus" onclick="addToCheckout2(${index})"></i>
+            <i class="fas fa-trash" onclick="removeFromCart2(${index})"></i>
             <img src="${item.image}" alt="${item.name}">
             <div class="content">
                 <h3>${item.name}</h3>
@@ -93,32 +93,36 @@ function updateCart() {
         totalPrice += price * item.quantity;
     });
 
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
     let totalElement = document.createElement('div');
     totalElement.className = 'total';
     totalElement.textContent = `Total: ${totalPrice.toFixed(2)} RON`;
     shoppingCart.appendChild(totalElement);
 
     let checkoutButton = document.createElement('a');
-    checkoutButton.href = '#';
+    checkoutButton.href = 'checkout.php';
     checkoutButton.className = 'button';
     checkoutButton.textContent = 'Checkout';
     shoppingCart.appendChild(checkoutButton);
     checkoutForm.querySelector('#cart-items-input').value = JSON.stringify(cartItems);
 }
 
-function removeFromCart(index) {
-    cartItems.splice(index, 1); 
-    updateCart(); 
+
+function addToCheckout2(index) {
+    cartItems[index].quantity = parseInt(cartItems[index].quantity, 10) + 1;
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    updateCart();
 }
 
-checkoutForm.addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission
+updateCart();
 
-    // Here, you can send the cart items to the server using AJAX or any other method
-    // For simplicity, I'll log the cart items to the console
-    console.log(JSON.parse(checkoutForm.querySelector('#cart-items-input').value));
-
-    // You can add code here to handle the server-side processing of the order
-    // (e.g., sending data to a server using fetch or XMLHttpRequest)
-});
+function removeFromCart2(index) {
+    cartItems[index].quantity = parseInt(cartItems[index].quantity, 10) - 1;
+    if (cartItems[index].quantity == 0) {
+        cartItems.splice(index, 1); 
+    }
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    updateCart(); 
+}
 
