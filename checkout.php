@@ -89,8 +89,8 @@
                 <label for="prenume">Prenume:</label>
                 <input type="text" name="prenume" id="prenume" required>
 
-                <label for="address">Adresă:</label>
-                <input type="text" name="address" id="address" required>
+                <label for="adresa">Adresă:</label>
+                <input type="text" name="adresa" id="adresa" required>
 
                 <label for="oras">Oraș:</label>
                 <input type="text" name="oras" id="oras" required>
@@ -99,7 +99,7 @@
                 <input type="number" name="codPostal" id="codPostal" required>
 
                 <label for="phone">Număr de telefon:</label>
-                <input type="tel" name="phone" id="phone" required>
+                <input type="number" name="phone" id="phone" required>
 
                 <!-- Additional checkout fields can be added here -->
 
@@ -197,13 +197,34 @@
 function confirmareComanda() {
     var numeClient = document.getElementById('nume').value;
     var prenumeClient = document.getElementById('prenume').value;
-    var telefonClient = document.getElementById('phone').value;
-    var adresaClient = document.getElementById('address').value;
+    var adresaClient = document.getElementById('adresa').value;
     var orasClient = document.getElementById('oras').value;
     var codPostal = document.getElementById('codPostal').value;
-    // Obține produsele din coșul de cumpărături (așa cum ai făcut în scriptul tău existent)
+    var telefonClient = document.getElementById('phone').value;
+
     var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
+    var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+    // Initialize totalPrice
+    var totalPrice = 0;
+
+    var productList = "<ul>";
+    cartItems.forEach(item => {
+        var price = parseFloat(item.price.replace(/[^\d.]/g, ''));
+        var itemTotal = price * item.quantity;
+        totalPrice += itemTotal;
+
+        productList += `<li>${item.name} - ${item.quantity} kg</li>`;
+    });
+    productList += "</ul>";
+
+    if (reducere != 0) {
+        let discountedPrice = totalPrice - totalPrice * (reducere / 100);
+        totalPrice = discountedPrice;
+    }
+
+    // Trimite email-ul
     Email.send({
         Host : "smtp.elasticemail.com",
         Username : "shoptrendlybox@gmail.com",
@@ -249,18 +270,12 @@ function confirmareComanda() {
                     <p>Dragă ${numeClient} ${prenumeClient},</p>
                     <p>Mulțumim pentru comanda plasată la VitaminaVerde! Comanda ta a fost primită și este în curs de procesare.</p>
                     <p>Detalii Comandă:</p>
-                    <ul>
-                        <!-- Loop prin produsele comandate și afișare -->
-                        <!-- Înlocuiește valorile de exemplu cu detalii reale ale comenzii -->
-                        <li>Nume Produs 1 - Cantitate: 2 - Preț: 20.00 RON</li>
-                        <li>Nume Produs 2 - Cantitate: 1 - Preț: 15.00 RON</li>
-                        <!-- Adaugă mai multe elemente după nevoie -->
-                    </ul>
-                    <p>Suma Totală: [Suma Totala] RON</p>
+                    ${productList}
+                    <p>Suma Totală: ${totalPrice.toFixed(2)} RON</p>
                     <p>Comanda ta va fi expediată la adresa următoare:</p>
-                    <p>${numeClient} ${prenumeClient}<br>${adresaClient}<br>${orasClient} ${codPostal}<br>România</p>
+                    <p>${numeClient} ${prenumeClient}<br>${telefonClient}<br>${adresaClient}<br>${orasClient} ${codPostal}<br>România</p>
                     <p>Dacă ai întrebări sau nelămuriri, te rugăm să ne contactezi.</p>
-                    <p>Mulțumim că ai ales VitaminaVerde! Apreciam afacerea ta.</p>
+                    <p>Mulțumim că ai ales VitaminaVerde!</p>
                     <hr>
                     <p>Acesta este un email automatizat. Te rugăm să nu răspunzi la acest mesaj.</p>
                 </div>
@@ -268,7 +283,10 @@ function confirmareComanda() {
             </html>
         `,
     }).then(
-        message => alert(message)
+        message => {
+            localStorage.removeItem('cartItems');
+            window.location.href = 'index.php'; // Replace 'confirmation_page.php' with the actual URL of your confirmation page
+        }
     );
 }
 
