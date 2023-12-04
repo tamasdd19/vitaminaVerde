@@ -194,15 +194,13 @@
     <script src="https://smtpjs.com/v3/smtp.js"></script>
 
     <script>
-function confirmareComanda() {
+function confirmareComanda(test) {
     var numeClient = document.getElementById('nume').value;
     var prenumeClient = document.getElementById('prenume').value;
     var adresaClient = document.getElementById('adresa').value;
     var orasClient = document.getElementById('oras').value;
     var codPostal = document.getElementById('codPostal').value;
     var telefonClient = document.getElementById('phone').value;
-
-    var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
     var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
@@ -284,8 +282,13 @@ function confirmareComanda() {
         `,
     }).then(
         message => {
-            localStorage.removeItem('cartItems');
-            window.location.href = 'index.php'; // Replace 'confirmation_page.php' with the actual URL of your confirmation page
+            if(message === "OK") {
+                localStorage.removeItem('cartItems');
+                window.location.href = 'index.php'; // Replace 'confirmation_page.php' with the actual URL of your confirmation page
+            }
+            else {
+                alert(message);
+            }
         }
     );
 }
