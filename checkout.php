@@ -83,6 +83,10 @@
             </form>
             <br>
             <form onsubmit="confirmareComanda(); reset(); return false;" id="confirmForm">
+            <!-- Add this input field to the checkout form -->
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required value="<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>">
+
                 <label for="nume">Nume:</label>
                 <input type="text" name="nume" id="nume" required>
 
@@ -202,6 +206,8 @@ function confirmareComanda(test) {
     var codPostal = document.getElementById('codPostal').value;
     var telefonClient = document.getElementById('phone').value;
 
+    var emailClient = document.getElementById('email') ? document.getElementById('email').value : '<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>';
+
     var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
     // Initialize totalPrice
@@ -227,7 +233,7 @@ function confirmareComanda(test) {
         Host : "smtp.elasticemail.com",
         Username : "shoptrendlybox@gmail.com",
         Password : "6737D21BAA75F452D751E0B22188A182D628",
-        To : 'andreitm20@gmail.com',
+        To : emailClient,
         From : "shoptrendlybox@gmail.com",
         Subject : "Confirmare comandă",
         Body : `

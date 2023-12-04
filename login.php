@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Authentication successful, set session variables and redirect to the desired page
             $_SESSION['username'] = $row['username'];
             $_SESSION['message'] = "Autentificare reușită. Bine ai venit, " . $row['username'] . "!";
+            $_SESSION['email'] = $email;
             header('Location: ' . $_POST['current_page']);
             exit();
         } else {
