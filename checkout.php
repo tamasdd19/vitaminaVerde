@@ -105,7 +105,8 @@
                 <label for="phone">Număr de telefon:</label>
                 <input type="number" name="phone" id="phone" required>
 
-                <!-- Additional checkout fields can be added here -->
+                <p>Plata se va face ramburs la curier!</p>
+                <br>
 
                 <input type="submit" value="Finalizează Comanda">
             </form>
@@ -276,6 +277,7 @@ function confirmareComanda(test) {
                     <p>Detalii Comandă:</p>
                     ${productList}
                     <p>Suma Totală: ${totalPrice.toFixed(2)} RON</p>
+                    <p>Plata se va face ramburs la curier.</p>
                     <p>Comanda ta va fi expediată la adresa următoare:</p>
                     <p>${numeClient} ${prenumeClient}<br>${telefonClient}<br>${adresaClient}<br>${orasClient} ${codPostal}<br>România</p>
                     <p>Dacă ai întrebări sau nelămuriri, te rugăm să ne contactezi.</p>
