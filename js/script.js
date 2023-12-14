@@ -101,7 +101,11 @@ function updateCart() {
     shoppingCart.appendChild(totalElement);
 
     let checkoutButton = document.createElement('a');
-    checkoutButton.href = 'checkout.php';
+    if(cartItems.length > 0) {
+        checkoutButton.href = 'checkout.php';
+    } else {
+        checkoutButton.href = '#';
+    }
     checkoutButton.className = 'button';
     checkoutButton.textContent = 'Checkout';
     shoppingCart.appendChild(checkoutButton);

@@ -121,7 +121,7 @@
 
             var couponValue = document.getElementById('coupon').value;
 
-            if (couponValue === 'EXEMPLU10') {
+            if (couponValue === 'REDUCERE10') {
                 if (reducere != 10){
                     reducere = 10;
                     updateCheckout();
@@ -130,7 +130,25 @@
                 else {
                     alert('Cuponul este deja aplicat');
                 }
-            } else {
+            } else if (couponValue === 'REDUCERE20') {
+                if (reducere != 20){
+                    reducere = 20;
+                    updateCheckout();
+                    alert('Reducerea de 20% a fost aplicata!');
+                }
+                else {
+                    alert('Cuponul este deja aplicat');
+                }
+            } else if (couponValue === 'REDUCERE30') {
+                if (reducere != 30){
+                    reducere = 30;
+                    updateCheckout();
+                    alert('Reducerea de 30% a fost aplicata!');
+                }
+                else {
+                    alert('Cuponul este deja aplicat');
+                }
+            }   else {
                     alert('Cupon invalid');
             }
         });
@@ -142,6 +160,12 @@
             // Display cart items in the checkout form
             let shoppingCart = document.getElementById('cart-items-container');
             shoppingCart.innerHTML = '';
+
+            if (cartItems.length === 0) {
+                // Redirect the user to the index.php page
+                window.location.href = 'index.php';
+                return; // Stop further execution of the function
+            }
 
             let totalPrice = 0;
 
@@ -199,106 +223,139 @@
     <script src="https://smtpjs.com/v3/smtp.js"></script>
 
     <script>
-function confirmareComanda(test) {
-    var numeClient = document.getElementById('nume').value;
-    var prenumeClient = document.getElementById('prenume').value;
-    var adresaClient = document.getElementById('adresa').value;
-    var orasClient = document.getElementById('oras').value;
-    var codPostal = document.getElementById('codPostal').value;
-    var telefonClient = document.getElementById('phone').value;
+    function confirmareComanda(test) {
+        var numeClient = document.getElementById('nume').value;
+        var prenumeClient = document.getElementById('prenume').value;
+        var adresaClient = document.getElementById('adresa').value;
+        var orasClient = document.getElementById('oras').value;
+        var codPostal = document.getElementById('codPostal').value;
+        var telefonClient = document.getElementById('phone').value;
 
-    var emailClient = document.getElementById('email') ? document.getElementById('email').value : '<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>';
+        var emailClient = document.getElementById('email') ? document.getElementById('email').value : '<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>';
 
-    var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
-    // Initialize totalPrice
-    var totalPrice = 0;
+        // Initialize totalPrice
+        var totalPrice = 0;
 
-    var productList = "<ul>";
-    cartItems.forEach(item => {
-        var price = parseFloat(item.price.replace(/[^\d.]/g, ''));
-        var itemTotal = price * item.quantity;
-        totalPrice += itemTotal;
+        var productList = "<ul>";
+        cartItems.forEach(item => {
+            var price = parseFloat(item.price.replace(/[^\d.]/g, ''));
+            var itemTotal = price * item.quantity;
+            totalPrice += itemTotal;
 
-        productList += `<li>${item.name} - ${item.quantity} kg</li>`;
-    });
-    productList += "</ul>";
+            productList += `<li>${item.name} - ${item.quantity} kg</li>`;
+        });
+        productList += "</ul>";
 
-    if (reducere != 0) {
-        let discountedPrice = totalPrice - totalPrice * (reducere / 100);
-        totalPrice = discountedPrice;
+        if (reducere != 0) {
+            let discountedPrice = totalPrice - totalPrice * (reducere / 100);
+            totalPrice = discountedPrice;
+        }
+
+        var discountCode = ""; // Codul inițial de reducere
+
+        if (totalPrice >= 500) {
+            discountCode = "REDUCERE30";
+        } else if (totalPrice >= 300) {
+            discountCode = "REDUCERE20";
+        } else if (totalPrice >= 100) {
+            discountCode = "REDUCERE10";
+        }
+
+        // Trimite email-ul
+        Email.send({
+            Host : "smtp.elasticemail.com",
+            Username : "shoptrendlybox@gmail.com",
+            Password : "6737D21BAA75F452D751E0B22188A182D628",
+            To : emailClient,
+            From : "shoptrendlybox@gmail.com",
+            Subject : "Confirmare comandă",
+            Body : `
+                <html lang="ro">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Email de Confirmare</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            margin: 0;
+                            padding: 0;
+                        }
+
+                        .container {
+                            max-width: 600px;
+                            margin: 20px auto;
+                            padding: 20px;
+                            border: 1px solid #ccc;
+                            border-radius: 5px;
+                        }
+
+                        h2 {
+                            color: #4caf50;
+                        }
+
+                        p {
+                            margin-bottom: 15px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h2>Email de Confirmare</h2>
+                        <p>Dragă ${numeClient} ${prenumeClient},</p>
+                        <p>Mulțumim pentru comanda plasată la VitaminaVerde! Comanda ta a fost primită și este în curs de procesare.</p>
+                        ${discountCode ? `<p>Codul tău de reducere pentru următoarea comandă: ${discountCode}</p>` : ''}
+                        <p>Detalii Comandă:</p>
+                        ${productList}
+                        <p>Suma Totală: ${totalPrice.toFixed(2)} RON</p>
+                        <p>Plata se va face ramburs la curier.</p>
+                        <p>Comanda ta va fi expediată la adresa următoare:</p>
+                        <p>${numeClient} ${prenumeClient}<br>${telefonClient}<br>${adresaClient}<br>${orasClient} ${codPostal}<br>România</p>
+                        <p>Dacă ai întrebări sau nelămuriri, te rugăm să ne contactezi.</p>
+                        <p>Mulțumim că ai ales VitaminaVerde!</p>
+                        <hr>
+                        <p>Acesta este un email automatizat. Te rugăm să nu răspunzi la acest mesaj.</p>
+                    </div>
+                </body>
+                </html>
+            `,
+        }).then(
+            message => {
+                if(message === "OK") {
+                    updateStock(cartItems);
+                    localStorage.removeItem('cartItems');
+                    window.location.href = 'index.php'; 
+                }
+                else {
+                    alert(message); // trebuie sa mai adaug verificare mail, scadere din stock in momentul comenzii, 
+                }                 
+            }
+        );
     }
 
-    // Trimite email-ul
-    Email.send({
-        Host : "smtp.elasticemail.com",
-        Username : "shoptrendlybox@gmail.com",
-        Password : "6737D21BAA75F452D751E0B22188A182D628",
-        To : emailClient,
-        From : "shoptrendlybox@gmail.com",
-        Subject : "Confirmare comandă",
-        Body : `
-            <html lang="ro">
-            <head>
-                <meta charset="UTF-8">
-                <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Email de Confirmare</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        line-height: 1.6;
-                        margin: 0;
-                        padding: 0;
-                    }
+    function updateStock(cartItems) {
+    // Transformă obiectul într-un șir JSON
+    const cartItemsJSON = JSON.stringify(cartItems);
 
-                    .container {
-                        max-width: 600px;
-                        margin: 20px auto;
-                        padding: 20px;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                    }
-
-                    h2 {
-                        color: #4caf50;
-                    }
-
-                    p {
-                        margin-bottom: 15px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h2>Email de Confirmare</h2>
-                    <p>Dragă ${numeClient} ${prenumeClient},</p>
-                    <p>Mulțumim pentru comanda plasată la VitaminaVerde! Comanda ta a fost primită și este în curs de procesare.</p>
-                    <p>Detalii Comandă:</p>
-                    ${productList}
-                    <p>Suma Totală: ${totalPrice.toFixed(2)} RON</p>
-                    <p>Plata se va face ramburs la curier.</p>
-                    <p>Comanda ta va fi expediată la adresa următoare:</p>
-                    <p>${numeClient} ${prenumeClient}<br>${telefonClient}<br>${adresaClient}<br>${orasClient} ${codPostal}<br>România</p>
-                    <p>Dacă ai întrebări sau nelămuriri, te rugăm să ne contactezi.</p>
-                    <p>Mulțumim că ai ales VitaminaVerde!</p>
-                    <hr>
-                    <p>Acesta este un email automatizat. Te rugăm să nu răspunzi la acest mesaj.</p>
-                </div>
-            </body>
-            </html>
-        `,
-    }).then(
-        message => {
-            if(message === "OK") {
-                localStorage.removeItem('cartItems');
-                window.location.href = 'index.php'; // Replace 'confirmation_page.php' with the actual URL of your confirmation page
-            }
-            else {
-                alert(message);
-            }
-        }
-    );
+    // Folosește fetch pentru a trimite datele către PHP
+    fetch('update_stock.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: cartItemsJSON,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Eroare la trimiterea datelor către server:', error);
+    });
 }
 
     </script>
