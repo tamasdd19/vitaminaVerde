@@ -48,20 +48,25 @@ function addToCart(event) {
 
     let productName = itemContainer.querySelector('.product-name').innerText;
     let productPrice = itemContainer.querySelector('.price').textContent;
+    let productMaxQuantity = itemContainer.querySelector('.cantitateMaxima').textContent;
+    let stockNumber = parseInt(productMaxQuantity.match(/\d+/)[0], 10);
     let productImage = itemContainer.querySelector('.product-image').getAttribute('src');
 
     let existingCartItem = cartItems.find(item => item.name === productName);
 
     if (existingCartItem) {
-        existingCartItem.quantity = parseInt(existingCartItem.quantity, 10) + 1;
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
-        updateCart();
+        if(existingCartItem.quantity < existingCartItem.maxQuantity) {
+            existingCartItem.quantity = parseInt(existingCartItem.quantity, 10) + 1;
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            updateCart();
+        }
     } else {
         let newCartItem = {
             name: productName,
             price: productPrice,
             quantity: 1,
-            image: productImage
+            image: productImage,
+            maxQuantity: stockNumber
         };
         cartItems.push(newCartItem);
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
@@ -114,9 +119,11 @@ function updateCart() {
 
 
 function addToCheckout2(index) {
-    cartItems[index].quantity = parseInt(cartItems[index].quantity, 10) + 1;
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    updateCart();
+    if(cartItems[index].quantity < cartItems[index].maxQuantity) {
+        cartItems[index].quantity = parseInt(cartItems[index].quantity, 10) + 1;
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        updateCart();
+    }
 }
 
 updateCart();

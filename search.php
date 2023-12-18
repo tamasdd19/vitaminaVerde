@@ -16,8 +16,6 @@
         <a href="index.php">acasă</a>
         <a href="produse.php">produse</a>
         <a href="categorii.php">categorii</a>
-        <a href="#blog">blog</a>
-        <a href="#review">review</a>
         </nav>
         <div class="icons">
         <div class="fas fa-bars" id="menu-button"></div>
@@ -98,13 +96,8 @@
                 echo '<img src="img/'.$nume.'.jpg" alt="fileNotFound" class="product-image">';
                 echo '<h3 class="product-name">'.$nume.'</h3>';
                 echo '<div class="price">'.$pret.' RON/kg</div>';
-                echo '<div class="stars">';
-                echo '<i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star-half-alt"></i>';
-                echo '</div>
+                echo '<div class="cantitateMaxima">Stock:'.$cantitate.'</div>';
+                echo '
                     <button class="button" onclick="addToCart(event)">adauga in cos</button>';
                 echo '</div>';
                 echo '</div>';

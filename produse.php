@@ -95,21 +95,18 @@
             $pret = $row['price'];
             $cantitate = $row['quantity'];
         
-            echo '<div class="box">';
-            echo '<div class="item">';
-            echo '<img src="img/'.$nume.'.jpg" alt="fileNotFound" class="product-image">';
-            echo '<h3 class="product-name">'.$nume.'</h3>';
-            echo '<div class="price">'.$pret.' RON/kg</div>';
-            echo '<div class="stars">';
-            echo '<i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>';
-            echo '</div>
-                <button class="button" onclick="addToCart(event)">adauga in cos</button>';
-            echo '</div>';
-            echo '</div>';
+            if($cantitate) {
+                echo '<div class="box">';
+                echo '<div class="item">';
+                echo '<img src="img/'.$nume.'.jpg" alt="fileNotFound" class="product-image">';
+                echo '<h3 class="product-name">'.$nume.'</h3>';
+                echo '<div class="price">'.$pret.' RON/kg</div>';
+                echo '<div class="cantitateMaxima">Stock:'.$cantitate.'</div>';
+                echo '
+                    <button class="button" onclick="addToCart(event)">adauga in cos</button>';
+                echo '</div>';
+                echo '</div>';
+            }
         }
 
         ?>

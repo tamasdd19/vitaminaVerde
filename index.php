@@ -102,53 +102,51 @@
 
             <div class="box-container">
 
-                <div class="box">
-                    <div class="item">
-                        <img src="img/portocale.jpg" alt="" class="product-image">
-                        <h3 class="product-name">portocale</h3>
-                        <div class="price"> 6 RON/kg</div>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <button class="button" onclick="addToCart(event)">adauga in cos</button>
-                    </div>
-                </div>
+            <?php
 
-                <div class="box">
-                    <div class="item">
-                        <img src="img/pepene verde.jpg" alt="" class="product-image">
-                        <h3 class="product-name">Pepene Verde</h3>
-                        <div class="price">4 RON/kg</div>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <button class="button" onclick="addToCart(event)">adauga in cos</button>
-                    </div>
-                </div>
+                $servername = "localhost";
+                $username = "root";
+                $password = "";
+                $database = "ewd";
 
-                <div class="box">
-                    <div class="item">
-                        <img src="img/ceapa.jpg" alt="" class="product-image">
-                        <h3 class="product-name">ceapa</h3>
-                        <div class="price">4 RON/kg</div>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <button class="button" onclick="addToCart(event)">adauga in cos</button>
-                    </div>
-                </div>
+                $conn = mysqli_connect($servername, $username, $password, $database);
+
+                if (!$conn) {
+                    die("Conexiunea la baza de date a eșuat: " . mysqli_connect_error());
+                }
+
+                $sql = "SELECT * FROM products";
+                $result = mysqli_query($conn, $sql);
+
+                if (!$result) {
+                    die("Eroare la interogare: " . mysqli_error($conn));
+                }
+
+                $counter = 0;
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $nume = $row['name'];
+                    $pret = $row['price'];
+                    $cantitate = $row['quantity'];
+
+                    if($cantitate) {
+                        echo '<div class="box">';
+                        echo '<div class="item">';
+                        echo '<img src="img/'.$nume.'.jpg" alt="fileNotFound" class="product-image">';
+                        echo '<h3 class="product-name">'.$nume.'</h3>';
+                        echo '<div class="price">'.$pret.' RON/kg</div>';
+                        echo '<div class="cantitateMaxima">Stock:'.$cantitate.'</div>';
+                        echo '
+                            <button class="button" onclick="addToCart(event)">adauga in cos</button>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    $counter++;
+                    if($counter == 3)
+                        break;
+                }
+
+                ?>
 
             </div>
 
