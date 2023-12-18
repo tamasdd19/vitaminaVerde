@@ -52,8 +52,7 @@
             echo '<input type="hidden" name="current_page" value="' . $_SERVER["REQUEST_URI"] . '">';
             echo '<input type="email" name="email" placeholder="email" class="box">';
             echo '<input type="password" name="password" placeholder="parola" class="box">';
-            echo '<p>Ti-ai uitat parola? <a href="forgotPassword.php">Apasa Aici</a></p>';
-            echo '<p>Nu ai cont? <a href="register.php">Creaza-ti Unul</a></p>';
+                        echo '<p>Nu ai cont? <a href="register.php">Creaza-ti Unul</a></p>';
             echo '<input type="submit" value="Conecteaza-te Acum" class="button">';
             echo '</form>';
         }
