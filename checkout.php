@@ -210,10 +210,12 @@
         }
 
         function addToCheckout(index) {
-            cartItems[index].quantity = parseInt(cartItems[index].quantity, 10) + 1;
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-            updateCheckout(); 
-            updateCart();
+            if(cartItems[index].quantity < cartItems[index].maxQuantity) {
+                cartItems[index].quantity = parseInt(cartItems[index].quantity, 10) + 1;
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                updateCheckout(); 
+                updateCart();
+            }
         }
         document.addEventListener('DOMContentLoaded', updateCheckout());
         updateCheckout();

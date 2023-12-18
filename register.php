@@ -1,5 +1,108 @@
 <?php
 session_start();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+//Load Composer's autoloader
+require 'vendor/autoload.php';
+
+function send_email($username, $email, $verify_token)
+{
+    $mail = new PHPMailer(true);
+
+    // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+    $mail->isSMTP();        
+    $mail->SMTPAuth   = true;                                       //Send using SMTP
+    $mail->Host       = 'smtp.elasticemail.com';                     //Set the SMTP server to send through                              //Enable SMTP authentication
+    $mail->Username   = 'shoptrendlybox@gmail.com';                     //SMTP username
+    $mail->Password   = '6737D21BAA75F452D751E0B22188A182D628';                               //SMTP password
+    $mail->Port       = 2525;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+    //Recipients
+    $mail->setFrom('shoptrendlybox@gmail.com');
+    $mail->addAddress($email);     //Add a recipient
+
+    //Content
+    $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->Subject = 'Confirmare adresa de email';
+    $mail->Body    = '<!DOCTYPE html>
+    <html lang="ro">
+    
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 0;
+            }
+    
+            .container {
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+    
+            h2 {
+                color: #4caf50;
+            }
+    
+            p {
+                margin-bottom: 15px;
+                color: #333;
+            }
+    
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                text-align: center;
+                text-decoration: none;
+                background-color: #4caf50;
+                color: #fff;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+    
+            .button:hover {
+                background-color: #45a049;
+            }
+    
+            hr {
+                border: 1px solid #ccc;
+                margin: 15px 0;
+            }
+    
+            .disclaimer {
+                font-size: 12px;
+                color: #888;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="container">
+            <h2>Confirmare E-mail</h2>
+            <p>Bună ziua, ' . $username . '!</p>
+            <p>Vă mulțumim că v-ați înregistrat pe VitaminaVerde. Pentru a finaliza procesul de înregistrare, vă rugăm să confirmați adresa de e-mail.</p>
+            <p>Pentru a confirma adresa de e-mail, apăsați butonul de mai jos:</p>
+            <p><a href="http://localhost/vitaminaVerde/verify-mail.php?token=' . $verify_token . '" class="button">Confirmare E-mail</a></p>
+            <hr>
+            <p class="disclaimer">Acesta este un e-mail automatizat. Nu răspundeți la acest mesaj. Dacă nu v-ați înregistrat pe VitaminaVerde, ignorați acest e-mail.</p>
+        </div>
+    </body>
+    
+    </html>
+    ';
+
+    $mail->send();
+    echo 'Message has been sent';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $servername = "localhost";
     $username = "root";
@@ -15,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm_password'];
+    $verify_token = md5(rand());
 
     $checkQuery = "SELECT * FROM users WHERE username='$username' OR email='$email'";
     $result = $conn->query($checkQuery);
@@ -30,10 +134,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($error)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashedPassword')";
+        $sql = "INSERT INTO users (username, email, password, verify_token) VALUES ('$username', '$email', '$hashedPassword', '$verify_token')";
 
         if ($conn->query($sql) === TRUE) {
-            $success = "Înregistrarea a fost realizată cu succes.";
+            $success = "Înregistrare cu succes! Verifică adresa de email.";
+            send_email($username, $email, $verify_token);
             $_SESSION['username'] = $username;
             $_SESSION['email'] = $email;
             header('Location: index.php');

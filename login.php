@@ -28,12 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $hashedPassword = $row['password'];
+        $is_verified = $row['is_verified'];
 
         if (password_verify($password, $hashedPassword)) {
             // Authentication successful, set session variables and redirect to the desired page
             $_SESSION['username'] = $row['username'];
             $_SESSION['message'] = "Autentificare reușită. Bine ai venit, " . $row['username'] . "!";
             $_SESSION['email'] = $email;
+            $_SESSION['is_verified'] = $is_verified;
             header('Location: ' . $_POST['current_page']);
             exit();
         } else {
